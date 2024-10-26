@@ -4,6 +4,7 @@
 	"dns_nameservers": ["2606:4700:4700::1111", "2606:4700:4700::1001"],
 	"remote_ipv4_server_ip": "",
 	"remote_ipv4_server_port": 0,
+	"bind_ipv4": "0.0.0.0",
 	"ipv6_prefix_length": 64,
 	"ipv6_prefix_cache_path": "/dev/shm/ipv6-address",
 	"ipv6_mask_cache_path": "/dev/shm/ipv6-mask",
@@ -11,7 +12,7 @@
 	"dns_record_ipv4": "ipv4.example.com",
 	"dns_record_ipv6": "ipv6.example.com",
 	"ionos": {
-		"zone_id": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+		"zone_id": "",
 		"api_key": ""
 	},
 	"cloudflare": {
@@ -22,6 +23,5 @@
 				"..."
 			]
 		}
-	},
-	"bind_ipv4": "0.0.0.0"
+	}
 }
