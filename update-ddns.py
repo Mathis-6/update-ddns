@@ -53,7 +53,7 @@ with open(args["config_file_path"]) as config_file:
 
 
 
-is_ionos_enabled = "ionos" in config and "zone_id" in config["ionos"]
+is_ionos_enabled = "ionos" in config and "zone_id" in config["ionos"] and "api_key" in config["ionos"] and config["ionos"]["zone_id"] and config["ionos"]["api_key"]
 is_cf_enabled = "cloudflare" in config and "zones" in config["cloudflare"]
 is_ipv4_enabled = "remote_ipv4_server_ip" in config and "remote_ipv4_server_port" in config and config["remote_ipv4_server_port"] > 0 and config["remote_ipv4_server_port"] < 65535
 is_dry_run = args["dry_run"]
@@ -94,6 +94,9 @@ def log_console(message: str, log_type: str = None, log_type_prefix: str = None)
 
 
 def update_ipv6_cache_files(ipv6_addr: str|bytes) -> None:
+	if "ipv6_prefix_cache_path" not in config or "ipv6_mask_cache_path" not in config or not config["ipv6_prefix_cache_path"] or not config["ipv6_mask_cache_path"]:
+		return
+
 	with open(config["ipv6_prefix_cache_path"], "wb") as file:
 		file.write(socket.inet_pton(socket.AF_INET6, ipv6_addr) if type(ipv6_addr) == str else ipv6_addr)
 	with open(config["ipv6_mask_cache_path"], "wb") as file:
