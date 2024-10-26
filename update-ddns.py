@@ -58,7 +58,7 @@ is_cf_enabled = "cloudflare" in config and "zones" in config["cloudflare"]
 is_ipv4_enabled = "remote_ipv4_server_ip" in config and "remote_ipv4_server_port" in config and config["remote_ipv4_server_port"] > 0 and config["remote_ipv4_server_port"] < 65535
 is_dry_run = args["dry_run"]
 debug = args["debug_mode"]
-sudo = "sudo " if os.getuid() == 0 else ""
+sudo = "sudo " if os.getuid() != 0 else ""
 
 ionos_http_client = httpx.Client(headers = {
 	"X-API-Key": config["ionos"]["api_key"],
