@@ -281,7 +281,7 @@ while True:
 						for old_record in cf_old_records:
 							# If IPv4 address changed
 							if wan_ipv4 and old_record["type"] == "A":
-								print("[CLOUDFLARE] Updating old IPv4 for " + old_record["name"] + " from " + last_ipv4_str + " to " + wan_ipv4_str)
+								log_console("[CLOUDFLARE] Updating old IPv4 for " + old_record["name"] + " from " + last_ipv4_str + " to " + wan_ipv4_str, "INFO")
 
 								cf_update_payload["patches"].append({
 									"id": old_record["id"],
@@ -292,7 +292,7 @@ while True:
 							#	If IPv6 prefix changed								100:: means this is a Worker
 							elif ipv6_prefix and old_record["type"] == "AAAA" and (old_record["content"] != "100::") and ipv6.has_ipv6_prefix(old_record["content"], last_ipv6_prefix, config["ipv6_prefix_length"]):
 								new_record_ipv6 = ipv6.replace_ipv6_prefix(old_record["content"], ipv6_prefix, config["ipv6_prefix_length"])
-								log_console("[CLOUDFLARE] Updating old address  " + old_record["content"] + "  with  " + new_record_ipv6)
+								log_console("[CLOUDFLARE] Updating old address  " + old_record["content"] + "  with  " + new_record_ipv6, "INFO")
 
 								cf_update_payload["patches"].append({
 									"id": old_record["id"],
@@ -329,13 +329,13 @@ while True:
 					elif ipv6_prefix and records_list[i]["type"] == "AAAA" and ipv6.has_ipv6_prefix(records_list[i]["content"], last_ipv6_prefix, config["ipv6_prefix_length"]):
 						# Then replace the prefix part keeping the host part intact
 						new_address = ipv6.replace_ipv6_prefix(records_list[i]["content"], ipv6_prefix, config["ipv6_prefix_length"])
-						log_console("[IONOS] Replacing  " + records_list[i]["content"] + "  with  " + new_address)
+						log_console("[IONOS] Replacing  " + records_list[i]["content"] + "  with  " + new_address, "INFO")
 						
 						patched_records.append({"name": records_list[i]["name"], "type": "AAAA", "content": new_address, "ttl": records_list[i]["ttl"], "prio": 0})
 					
 				if len(patched_records):
 					if is_dry_run:
-						log_console("[IONOS] Dry run: Would update the following records for " + config["ionos"]["zone_id"] + ":")
+						log_console("[IONOS] Dry run: Would update the following records for " + config["ionos"]["zone_id"] + ":", "INFO")
 						print(patched_records)
 					else:
 						response = ionos_http_client.patch("https://api.hosting.ionos.com/dns/v1/zones/" + config["ionos"]["zone_id"], json=patched_records)
@@ -344,7 +344,6 @@ while True:
 							print(response.text)
 							exit(1)
 					
-					print(" Done")
 					print(patched_records)
 			
 			break
