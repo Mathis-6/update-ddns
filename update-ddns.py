@@ -60,11 +60,12 @@ is_dry_run = args["dry_run"]
 debug = args["debug_mode"]
 sudo = "sudo " if os.getuid() != 0 else ""
 
-ionos_http_client = httpx.Client(headers = {
-	"X-API-Key": config["ionos"]["api_key"],
-	"Content-Type": "application/json",
-	"Accept": "application/json"
-})
+if is_ionos_enabled:
+	ionos_http_client = httpx.Client(headers = {
+		"X-API-Key": config["ionos"]["api_key"],
+		"Content-Type": "application/json",
+		"Accept": "application/json"
+	})
 
 if is_cf_enabled:
 	cf_http_client = httpx.Client(headers = {
@@ -224,8 +225,6 @@ while True:
 		continue
 	
 	
-	records_list = None
-	
 	while True:
 		
 		if ipv6_prefix:
@@ -233,20 +232,6 @@ while True:
 		if wan_ipv4:
 			wan_ipv4_str = wan_ipv4.decode()
 			log_console(f"New IPv4 detected: {wan_ipv4_str}", "UPDATE")
-		
-		try:
-			response = ionos_http_client.get("https://api.hosting.ionos.com/dns/v1/zones/" + config["ionos"]["zone_id"])
-			records_list = json.loads(response.content)
-			if "records" not in records_list:
-				log_console(f"Unexpected response from ionos API when retrieving zones: {response.text}", "ERROR")
-				print(records_list)
-				exit(1)
-				
-			records_list = records_list["records"]
-		
-		except:
-			log_console(traceback.format_exc(), "ERROR")
-			time.sleep(config["retry_delay"])
 		
 		
 		try:
@@ -320,6 +305,23 @@ while True:
 				
 
 			if is_ionos_enabled:
+				
+				records_list = None
+				
+				try:
+					response = ionos_http_client.get("https://api.hosting.ionos.com/dns/v1/zones/" + config["ionos"]["zone_id"])
+					records_list = json.loads(response.content)
+					if "records" not in records_list:
+						log_console(f"Unexpected response from ionos API when retrieving zones: {response.text}", "ERROR")
+						print(records_list)
+						exit(1)
+						
+					records_list = records_list["records"]
+				
+				except:
+					log_console(traceback.format_exc(), "ERROR")
+					time.sleep(config["retry_delay"])
+				
 				patched_records = []
 
 				for i in range(len(records_list)):
