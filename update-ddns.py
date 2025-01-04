@@ -3,6 +3,7 @@ import socket
 import time
 import json
 import os
+import subprocess
 import sys
 import argparse
 import traceback
@@ -186,7 +187,7 @@ while True:
 				consecutive_timeouts += 1
 				print("timeout #" + str(consecutive_timeouts))
 				if (consecutive_timeouts > 60):
-					os.system(f"wall '[update-ddns] Reached {consecutive_timeouts} consecutive timeouts when retrieving public IPv4'")
+					subprocess.run(["wall", f"[update-ddns] Reached {consecutive_timeouts} consecutive timeouts when retrieving public IPv4"])
 
 		iface_addrs = netifaces.ifaddresses(config["ipv6_interface"])
 		ipv6_addresses = iface_addrs[netifaces.AF_INET6]
@@ -201,11 +202,12 @@ while True:
 				continue
 
 			print("New IPv6 address detected on " + config["ipv6_interface"] + ": " + ip.compressed + ", deleting the old one " + last_ipv6 + "...")
-			command_to_delete_old_address = sudo + "ip -6 address delete " + last_ipv6 + "/64 dev " + config["ipv6_interface"]
+			command_to_delete_old_address = [sudo] if sudo else []
+			command_to_delete_old_address += ["ip", "-6", "address", "delete", f"{last_ipv6}/64", "dev", config["ipv6_interface"]]
 			if is_dry_run:
 				print(f"Dry-run: Would have executed this command: {command_to_delete_old_address}")
 			else:
-				os.system(command_to_delete_old_address)
+				subprocess.run(command_to_delete_old_address)
 			
 
 			last_ipv6 = ip.compressed
