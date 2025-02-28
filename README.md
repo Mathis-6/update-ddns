@@ -59,6 +59,8 @@ Can be used by other applications.
 
 `dns_record_ipv4`: Same thing as `dns_record_ipv6`, but optional.
 
+`shell_commands`: List of commands to execute after the IPv6 prefix has changed.
+
 `ionos`.`zone_id`: Your DNS zone ID.<br>
 `ionos`.`api_key`: The account API key.
 

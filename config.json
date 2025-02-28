@@ -11,6 +11,7 @@
 	"ipv6_interface": "eth0",
 	"dns_record_ipv4": "ipv4.example.com",
 	"dns_record_ipv6": "ipv6.example.com",
+	"shell_commands": [],
 	"ionos": {
 		"zone_id": "",
 		"api_key": ""

@@ -61,6 +61,9 @@ is_dry_run = args["dry_run"]
 debug = args["debug_mode"]
 sudo = "sudo " if os.getuid() != 0 else ""
 
+if "shell_commands" not in config or type(config["shell_commands"]) is not list:
+	config["shell_commands"] = []
+
 if is_ionos_enabled:
 	ionos_http_client = httpx.Client(headers = {
 		"X-API-Key": config["ionos"]["api_key"],
@@ -221,7 +224,7 @@ while True:
 	
 	if wan_ipv4 == last_ipv4:
 		wan_ipv4 = False
-	
+
 	if wan_ipv4 == False and ipv6_prefix == False:
 		time.sleep(config["update_delay"])
 		continue
@@ -231,6 +234,14 @@ while True:
 		
 		if ipv6_prefix:
 			log_console("New IPv6 GUA prefix detected: " + socket.inet_ntop(socket.AF_INET6, ipv6_prefix) + "/" + str(config["ipv6_prefix_length"]), "UPDATE")
+
+			for command in config["shell_commands"]:
+				if type(command) is not str:
+					log_console(f"Skipping bad value '{command}' in shell_commands", "WARNING")
+					continue
+
+				log_console(f"Running shell command '{command}'", "INFO")
+				os.system(command)
 		if wan_ipv4:
 			wan_ipv4_str = wan_ipv4.decode()
 			log_console(f"New IPv4 detected: {wan_ipv4_str}", "UPDATE")
