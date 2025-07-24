@@ -59,7 +59,7 @@ is_cf_enabled = "cloudflare" in config and "zones" in config["cloudflare"]
 is_ipv4_enabled = "remote_ipv4_server_ip" in config and "remote_ipv4_server_port" in config and config["remote_ipv4_server_port"] > 0 and config["remote_ipv4_server_port"] < 65535
 is_dry_run = args["dry_run"]
 debug = args["debug_mode"]
-sudo = "sudo " if os.getuid() != 0 else ""
+sudo = "sudo" if os.getuid() != 0 else ""
 
 if "shell_commands" not in config or type(config["shell_commands"]) is not list:
 	config["shell_commands"] = []
